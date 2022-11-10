@@ -36,35 +36,11 @@ endmodule
 
 // -----
 
-module Foo(
-  // expected-error @below {{unsupported module port}}
-  input a
-);
-endmodule
-
-// -----
-
-// expected-error @below {{unsupported construct}}
+// expected-error @below {{unsupported top-level construct}}
 package Foo;
 endpackage
 
 module Bar;
-endmodule
-
-// -----
-
-module Foo;
-  // expected-error @below {{variable initializer expressions not supported}}
-  int a = 0;
-endmodule
-
-// -----
-
-module Foo;
-  initial begin
-    // expected-error @below {{variable initializer expressions not supported}}
-    automatic int a = 0;
-  end
 endmodule
 
 // -----
@@ -75,4 +51,38 @@ module Foo;
     // expected-error @below {{unsupported statement}}
     release a;
   end
+endmodule
+
+// -----
+
+module Foo;
+  bit x, y;
+  // expected-error @below {{match patterns in if conditions not supported}}
+  initial if (x matches 42) x = y;
+endmodule
+
+// -----
+
+module Foo;
+  int x;
+  // expected-error @below {{delayed assignments not supported}}
+  initial x <= #1ns 42;
+endmodule
+
+// -----
+
+module Foo;
+  int x;
+  // expected-error @below {{delayed continuous assignments not supported}}
+  assign #1ns x = 42;
+endmodule
+
+// -----
+
+module Foo;
+  logic x;
+  // expected-error @below {{literals with X or Z bits not supported}}
+  initial x = 'x;
+  // expected-error @below {{literals with X or Z bits not supported}}
+  initial x = 'z;
 endmodule
